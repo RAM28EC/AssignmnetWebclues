@@ -1,0 +1,7 @@
+vpc-name      = "assignmnets-vpc"
+igw-name      = "assignmnest-igw"
+subnet-name   = "assignmnest-subnet"
+rt-name       = "assignmnest-route-table"
+sg-name       = "assignmnest-sg"
+instance-name = "assignmnest-server"
+key-name      = "mumbai-key"
