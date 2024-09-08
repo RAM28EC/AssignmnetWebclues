@@ -1,0 +1,49 @@
+---
+- name: Configure NGINX 
+  hosts: webservers
+  become: yes
+  tasks:
+   
+
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable NGINX service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create NGINX configuration to proxy requests to Node.js app running on remote server
+      copy:
+        dest: /etc/nginx/conf.d/nodejs_proxy.conf
+        content: |
+          server {
+              listen 80;
+              server_name localhost;  # Replace with your domain or IP
+
+              location / {
+                  proxy_pass http://52.66.152.244:80;  
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host $host;
+                  proxy_cache_bypass $http_upgrade;
+              }
+          }
+
+    - name: Remove default NGINX welcome page configuration
+      file:
+        path: /etc/nginx/conf.d/default.conf
+        state: absent
+
+    - name: Test NGINX configuration syntax
+      command: nginx -t
+      ignore_errors: yes
+
+    - name: Reload NGINX if the configuration is valid
+      systemd:
+        name: nginx
+        state: reloaded
